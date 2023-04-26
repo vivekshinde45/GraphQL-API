@@ -3,41 +3,44 @@ package com.graphQL.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
 import com.graphQL.entities.Book;
+import com.graphQL.payload.BookDto;
 import com.graphQL.services.implementations.BookService;
 
-@RestController
-@RequestMapping("/api")
+@Controller
 public class BookController {
     @Autowired
     private BookService _bookService;
 
     // create
-    @PostMapping("/book")
-    public ResponseEntity<Book> create(@RequestBody Book book) {
-        Book savedBook = this._bookService.create(book);
-        return ResponseEntity.ok(savedBook);
+    // @PostMapping("/book")
+    @MutationMapping("createBook")
+    public Book create(@Argument BookDto bookDto) {
+        Book book = Book.builder()
+                .title(bookDto.getTitle())
+                .author(bookDto.getAuthor())
+                .desc(bookDto.getDesc())
+                .price(bookDto.getPrice())
+                .pages(bookDto.getPages())
+                .build();
+        return this._bookService.create(book);
     }
 
     // get all
-    @GetMapping("/books")
-    public ResponseEntity<List<Book>> getAll() {
-        List<Book> books = this._bookService.getAll();
-        return ResponseEntity.ok(books);
+    @QueryMapping("allBooks")
+    public List<Book> getAllQL() {
+        return this._bookService.getAll();
     }
 
     // get by id
-    @GetMapping("/book/{bookId}")
-    public ResponseEntity<Book> getById(@PathVariable Integer bookId) {
-        Book book = this._bookService.getById(bookId);
-        return ResponseEntity.ok(book);
+    // @GetMapping("/book/{bookId}")
+    @QueryMapping("getBook")
+    public Book getById(@Argument Integer bookId) {
+        return this._bookService.getById(bookId);
     }
 }

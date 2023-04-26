@@ -26,6 +26,7 @@ public class GraphQlApiApplication implements CommandLineRunner {
 				.price(45.45)
 				.pages(100)
 				.build();
+
 		Book b2 = Book.builder()
 				.title("Second Book")
 				.desc("Written by saurabh")
